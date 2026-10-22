@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a task end to end under the project's own rules. Finds and reads the project's rules first (CLAUDE.md / AGENTS.md, a .rules/ index, contributor guides), judges whether the code it lands on needs a refactor first via the assess-refactor skill, builds the change with the cleanup it needs, runs the project's lint / build / test checks, and finishes with a code review. Works from a plain task description or from a spec folder with a phased plan (such as one produced by spec-task). Use when the user says "implement X", "build this", "do phase 2 of the plan", "реализуй", "сделай задачу", or hands over a signed-off plan.
+description: Implement a task end to end under the project's own rules. Finds and reads the project's rules first (CLAUDE.md / AGENTS.md, a .rules/ index, contributor guides), judges whether the code it lands on needs a refactor first via the assess-refactor skill, builds the change with the cleanup it needs, runs the project's lint / build / test checks, and finishes with a code review. Works from a plain task description or from a spec folder with a phased plan (such as one produced by spec-task). Use when the user says "implement X", "build this", "do phase 2 of the plan", or hands over a signed-off plan.
 ---
 
 # implement

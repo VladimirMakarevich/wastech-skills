@@ -17,6 +17,9 @@ npx skills add VladimirMakarevich/wastech-skills --skill spec-task -a claude-cod
 # implement together with the skill it runs first
 npx skills add VladimirMakarevich/wastech-skills --skill implement --skill assess-refactor
 
+# interview, then write the spec
+npx skills add VladimirMakarevich/wastech-skills --skill interview-to-spec --skill interview --skill spec-task
+
 # everything, for every project on this machine
 npx skills add VladimirMakarevich/wastech-skills --skill '*' -g
 ```
@@ -31,6 +34,8 @@ Requires Node.js 22.20+. Manual install works too: copy `skills/<name>/` into yo
 | [spec-task](skills/spec-task/SKILL.md) | Turns a rough idea into a reviewed spec folder — problem, requirements, scope, happy path, design, acceptance criteria, definition of done, open questions — and a phased implementation plan. Co-written with you one document at a time. Learns the repository's rules and commands first, so the design fits the project. |
 | [implement](skills/implement/SKILL.md) | Builds a task or a plan phase end to end under the project's own rules: reads the rules, checks the ground with `assess-refactor`, builds with the cleanup it needs, runs lint / build / tests, and finishes with a code review. |
 | [assess-refactor](skills/assess-refactor/SKILL.md) | Before a change, decides whether the code it lands on needs a refactor first. Bounded to the change's blast radius, gated on passing tests, analysis only. |
+| [interview](skills/interview/SKILL.md) | Interviews you about a plan or idea until you share an understanding: rounds of numbered questions over the decision tree, each with a recommended answer. Looks up facts itself, leaves the decisions to you. |
+| [interview-to-spec](skills/interview-to-spec/SKILL.md) | Runs `interview`, then hands the settled decisions to `spec-task` so they land in the spec without being asked again. |
 | [handoff](skills/handoff/SKILL.md) | Compacts the current conversation into one copy-pasteable prompt, so a fresh session can pick up the work. Invoked by you only, as `/handoff`. |
 
 ### How the skills find your project's rules
