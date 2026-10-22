@@ -1,67 +1,27 @@
 ---
 name: implement
-description: Implement a task end to end under the project's own rules. Finds and reads the project's rules first (CLAUDE.md / AGENTS.md, a .rules/ index, contributor guides), judges whether the code it lands on needs a refactor first via the assess-refactor skill, builds the change with the cleanup it needs, runs the project's lint / build / test checks, and finishes with a code review. Works from a plain task description or from a spec folder with a phased plan (such as one produced by spec-task). Use when the user says "implement X", "build this", "do phase 2 of the plan", or hands over a signed-off plan.
+description: Implement a task in wastime-app end to end.
 ---
 
 # implement
 
-Builds a task end to end — from reading the rules to a reviewed, green change — in whatever
-repository it runs in. The task can be a plain description or a spec folder with a plan.
+**Before writing any code, check the area the task touches for refactoring:** run the [assess-refactor](../assess-refactor/SKILL.md) skill and act on its verdict. If it calls for a refactor first, do that bounded, behavior-preserving refactor, then build the task on top of it — both land together as one finished task.
 
-## 1. Understand the task
+Implement the task.
 
-- **A spec folder or plan** (e.g. `docs/tasks/<slug>/plan/index.md`): read its `index.md`, the design, the acceptance criteria, and the phase you're asked to build. If no phase is named, take the first one not marked done and say which. Build what the plan says; if the plan turns out wrong, stop and raise it instead of silently diverging.
-- **A plain description**: restate it in a line. If it's ambiguous in a way the code can't answer, ask before writing code. Anything the repository can answer, look up instead of asking.
+Strictly follow the project rules outlined in the documentation. In particular, observe the following rules:
 
-## 2. Find the project's rules
+- `[architecture](../../../.rules/architecture.md)`
+- `[coding-style](../../../.rules/coding-style.md)`
+- `[refactoring](../../../.rules/refactoring.md)`
+- `[git-workflow](../../../.rules/git-workflow.md)`
+- `[security](../../../.rules/security.md)`
+- `[testing](../../../.rules/testing.md)`
 
-Read the rules **before** writing code, and follow them strictly. Find them in this order and stop
-at the first source that gives a clear answer:
+When the task writes or changes text a user reads, the content rules apply as well:
 
-1. `CLAUDE.md` / `AGENTS.md` at the repository root — and whatever rules index or rule files they point to.
-2. A rules index at `.rules/README.md`, and the rule files it lists.
-3. Other conventional places: `CONTRIBUTING.md`, `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`, a `docs/` folder of guidelines, architecture decision records.
-4. If nothing is written down, the conventions the codebase already follows consistently. Tell the user you're working from inferred conventions.
+- `[values-and-philosophy](../../../.rules/values-and-philosophy.md)`
+- `[tone-of-voice](../../../.rules/tone-of-voice.md)`
+- `[marketing](../../../.rules/marketing.md)`
 
-Read only the rules relevant to this change, but read those in full. Typical groups:
-
-- **Always** — architecture/layering, coding style, refactoring, git workflow (branches, commits, versioning), security, testing.
-- **When the change touches text a user reads** — any content, tone-of-voice, or copy rules the project defines. Code, identifiers, comments, and logs stay under the technical rules.
-- **When the change touches a subsystem with its own guide** — persistence and migrations, generated code, styling, i18n, integrations. If the project has a skill for that subsystem, use it.
-
-On a conflict between a technical rule and anything else, the technical rule wins. If the task
-can't be done without bending a rule, stop and ask — don't decide it silently.
-
-## 3. Check the ground before building
-
-**Before writing any code, check the area the task touches for refactoring.** Run the
-`assess-refactor` skill and act on its verdict. If it calls for a refactor first, do that bounded,
-behavior-preserving refactor — with its test gate met — then build the task on top of it. Both land
-together as one finished task.
-
-If `assess-refactor` isn't installed, do a short assessment yourself: map the files the change
-touches, check whether that code follows the project's rules and has tests, and decide in one line
-whether a bounded refactor must come first. Never refactor code without passing tests over it.
-
-## 4. Build it
-
-- Make the change as a vertical slice through the project's real layers, following the patterns the rules and the surrounding code use. New code reads like the code next to it.
-- Clean up what you touch along the way, bounded by the task's blast radius: logic moved to the layer the architecture assigns it, mandatory patterns restored, dead code removed. Behavior-preserving, and never larger than the change it serves.
-- New or changed logic ships with tests, as the project's testing rules require.
-- Generated code is regenerated by its command, never edited by hand. Schema changes go through the project's migration mechanism.
-- Commit only if the user asked, following the project's git workflow.
-
-## 5. Verify
-
-Run the project's checks — the lint, build, and test commands from its rules, definition of done,
-or manifest scripts. Fix what fails. Report honestly: if something still fails or was skipped, say
-so with the output. When building from a plan, tick the phase's acceptance items and its status.
-
-## 6. Review
-
-**Once you've finished the implementation, review it.** If the project or the agent provides a
-code-review skill or command (for example `/code-review`), invoke it. Otherwise review the diff
-yourself against the rules from step 2 and the task's acceptance criteria, and fix what you find.
-
-Finish with a short summary: what changed, the verdict from step 3, checks run and their result,
-and anything left open.
+**Once you’ve finished the implementation, invoke the `/code-review` skill.**
