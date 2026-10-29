@@ -20,6 +20,9 @@ npx skills add VladimirMakarevich/wastech-skills --skill implement --skill asses
 # interview, then write the spec
 npx skills add VladimirMakarevich/wastech-skills --skill interview-to-spec --skill interview --skill spec-task
 
+# park a task in the backlog and resume it later
+npx skills add VladimirMakarevich/wastech-skills --skill park
+
 # everything, for every project on this machine
 npx skills add VladimirMakarevich/wastech-skills --skill '*' -g
 ```
@@ -37,6 +40,7 @@ Requires Node.js 22.20+. Manual install works too: copy `skills/<name>/` into yo
 | [interview](skills/interview/SKILL.md) | Interviews you about a plan or idea until you share an understanding: rounds of numbered questions over the decision tree, each with a recommended answer. Looks up facts itself, leaves the decisions to you. |
 | [interview-to-spec](skills/interview-to-spec/SKILL.md) | Runs `interview`, then hands the settled decisions to `spec-task` so they land in the spec without being asked again. |
 | [handoff](skills/handoff/SKILL.md) | Compacts the current conversation into one copy-pasteable prompt, so a fresh session can pick up the work. Invoked by you only, as `/handoff`. |
+| [park](skills/park/SKILL.md) | Parks a task that isn't worth finishing now: writes a card to `docs/backlog/` with why it stopped, what's done, the decisions and their reasons, open questions, and the exact next step, and keeps the uncommitted code on a WIP branch or in a patch. `/park resume <slug>` checks what went stale since, restores the code, and continues from that step. |
 
 ### How the skills find your project's rules
 
