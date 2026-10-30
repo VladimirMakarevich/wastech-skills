@@ -5,9 +5,9 @@ description: Interview the user relentlessly about a plan, decision, or idea unt
 
 # interview
 
-Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
+Interview the user and keep questioning the user until you reach a shared understanding. Structure this as a **design tree**: each decision gives rise to branches—subsequent decisions that follow from it.
 
-Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
+Work through the tree in **rounds**. The **frontier** consists of all the decisions for which the prerequisites have already been met—that is, questions you can ask *right now* without having to guess answers you don’t yet know. In each round, pose all the questions that fall within this frontier; number each question and provide your own suggested answer. Then, wait for the user’s responses before moving on to the next round.
 
 Format a round like so:
 
@@ -23,7 +23,7 @@ Format a round like so:
 ➡️ <your recommended answer>
 ```
 
-Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
+With each stage of user responses, the tree structure evolves: the decisions made expand the range of available options and unlock access to questions that were contingent upon those decisions. Once this occurs, the scope is updated, and the questions for the next stage are presented. If the answer to a particular question depends on another question that remains unresolved at the current stage, then that question is assigned to a _subsequent_ stage rather than the current one.
 
 Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it — or look it up yourself if sub-agents aren't available; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the result; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
 
