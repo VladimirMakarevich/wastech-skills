@@ -68,8 +68,6 @@ Run `/spec-task <your idea>` or ask the agent to "spec out" a task. It will:
 3. Draft each document with you, one at a time, and wait for your sign-off before the next.
 4. Write the implementation plan last, split into small ordered phases.
 
-It writes documents only — no code.
-
 ## License
 
 MIT
