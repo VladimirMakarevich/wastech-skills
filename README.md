@@ -71,3 +71,7 @@ Run `/spec-task <your idea>` or ask the agent to "spec out" a task. It will:
 ## License
 
 MIT
+
+### Credits
+
+The `interview` skill is adapted from [grill-me](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me) by Matt Pocock (MIT). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
