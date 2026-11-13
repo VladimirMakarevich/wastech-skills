@@ -24,4 +24,4 @@ When the task writes or changes text a user reads, the content rules apply as we
 - `[tone-of-voice](../../../.rules/tone-of-voice.md)`
 - `[marketing](../../../.rules/marketing.md)`
 
-**Once you’ve finished the implementation, invoke the `/code-review` skill.**
+**Once you’ve finished the implementation, invoke the `/code-review` skill using subagents.**
