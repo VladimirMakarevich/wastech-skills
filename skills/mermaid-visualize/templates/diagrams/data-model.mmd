@@ -1,0 +1,21 @@
+%% Data model: the entities and relations this task touches, with only the fields that matter here.
+%% Mark new or changed fields with a comment: "NEW" or "CHANGED". A new entity: "NEW table" on its key.
+erDiagram
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER }o--o| PROMO_CODE : applies
+    ORDER {
+        uuid id PK
+        decimal total
+        decimal discount "NEW"
+        string promo_code FK "NEW"
+    }
+    ORDER_ITEM {
+        uuid id PK
+        uuid order_id FK
+        int quantity
+    }
+    PROMO_CODE {
+        string code PK "NEW table"
+        int percent_off
+        date expires_at
+    }

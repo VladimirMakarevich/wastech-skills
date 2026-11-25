@@ -1,0 +1,26 @@
+%% Sequence: who calls whom, in what order, for ONE flow. At most 7 participants and 25 messages.
+%% Participants named as in the code. New steps sit inside rect + Note; error branches in alt / else.
+sequenceDiagram
+    autonumber
+    actor C as Customer
+    participant UI as Checkout page
+    participant API as Orders API
+    participant R as Discount rules
+    participant DB as Orders DB
+
+    C->>UI: Enters promo code, presses Apply
+    rect rgb(227, 244, 232)
+        Note over UI,R: New in this task
+        UI->>API: POST /orders/:id/promo
+        API->>R: validate(code, cart)
+        alt code valid
+            R-->>API: discount
+            API->>DB: save discount on the order
+            API-->>UI: 200, new total
+            UI-->>C: Total with discount
+        else code unknown or expired
+            R-->>API: rejection reason
+            API-->>UI: 422, reason
+            UI-->>C: Inline error
+        end
+    end

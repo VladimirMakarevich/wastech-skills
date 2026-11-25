@@ -1,0 +1,58 @@
+{
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "fontSize": "15px",
+    "background": "#FFFFFF",
+    "primaryColor": "#F4F6F8",
+    "primaryTextColor": "#1F2933",
+    "primaryBorderColor": "#9AA5B1",
+    "secondaryColor": "#EEF2F6",
+    "secondaryTextColor": "#1F2933",
+    "secondaryBorderColor": "#9AA5B1",
+    "tertiaryColor": "#FFFFFF",
+    "tertiaryTextColor": "#1F2933",
+    "tertiaryBorderColor": "#CBD2D9",
+    "lineColor": "#52606D",
+    "textColor": "#1F2933",
+    "clusterBkg": "#FAFBFC",
+    "clusterBorder": "#CBD2D9",
+    "titleColor": "#323F4B",
+    "edgeLabelBackground": "#FFFFFF",
+    "noteBkgColor": "#FFF8DB",
+    "noteBorderColor": "#D9B44A",
+    "noteTextColor": "#1F2933",
+    "actorBkg": "#E6EEFF",
+    "actorBorder": "#3B5BDB",
+    "actorTextColor": "#1E2A78",
+    "actorLineColor": "#9AA5B1",
+    "signalColor": "#52606D",
+    "signalTextColor": "#1F2933",
+    "labelBoxBkgColor": "#F4F6F8",
+    "labelBoxBorderColor": "#9AA5B1",
+    "labelTextColor": "#1F2933",
+    "loopTextColor": "#323F4B",
+    "activationBkgColor": "#E3F4E8",
+    "activationBorderColor": "#2F855A",
+    "sequenceNumberColor": "#FFFFFF",
+    "attributeBackgroundColorOdd": "#FFFFFF",
+    "attributeBackgroundColorEven": "#F4F6F8"
+  },
+  "themeCSS": ".edgeLabel rect, .edgeLabel .background, .labelBkg { opacity: 1 !important; fill: #FFFFFF; } .messageText, .loopText, .loopText tspan { paint-order: stroke fill; stroke: #FFFFFF !important; stroke-width: 4px !important; stroke-linejoin: round; }",
+  "htmlLabels": false,
+  "flowchart": {
+    "htmlLabels": false,
+    "wrappingWidth": 280,
+    "nodeSpacing": 45,
+    "rankSpacing": 55,
+    "padding": 14
+  },
+  "sequence": {
+    "mirrorActors": false,
+    "wrap": true,
+    "messageMargin": 40
+  },
+  "er": {
+    "layoutDirection": "TB"
+  }
+}

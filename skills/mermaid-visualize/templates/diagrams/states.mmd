@@ -1,0 +1,20 @@
+%% States: the lifecycle of one thing (an entity, a screen, a job), each transition labelled with its trigger.
+%% Works for UI states too: idle / loading / empty / error / success.
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Validating: Apply pressed
+    Validating --> Applied: code valid
+    Validating --> Rejected: code unknown or expired
+    Rejected --> Validating: Apply pressed again
+    Applied --> Idle: code removed
+    Applied --> [*]: order paid
+
+    %% --- status kit (references/style.md): keep as is ---
+    classDef new fill:#E3F4E8,stroke:#2F855A,stroke-width:2.5px,color:#1C4532
+    classDef changed fill:#FFF3D6,stroke:#B7791F,stroke-width:2px,stroke-dasharray:6 3,color:#5F370E
+    classDef removed fill:#FDE8E8,stroke:#C53030,stroke-width:2px,stroke-dasharray:2 3,color:#742A2A
+    classDef existing fill:#F4F6F8,stroke:#9AA5B1,stroke-width:1px,color:#323F4B
+    classDef focus fill:#F3EBFF,stroke:#6B46C1,stroke-width:3px,color:#322659
+
+    class Validating,Applied,Rejected new
+    class Idle existing
