@@ -1,6 +1,6 @@
 ---
 name: park
-description: Park the current task in the project's backlog — snapshot where the work stopped (goal, progress, decisions and their reasons, findings, open questions, the exact next step, and the uncommitted code) into a card under docs/backlog/, so it can be picked up later from the same place by any session. Also resumes a parked task: finds the card, checks what went stale since, restores the code, and continues. Use when the user decides a task costs more than it is worth right now — "park this", "shelve it", "put this in the backlog", "let's stop here and come back later", "отложи задачу" — or wants one back — "resume <task>", "pick up <task> from the backlog", "what's in the backlog".
+description: Park the current task in the project's backlog — snapshot where the work stopped (goal, progress, decisions and their reasons, findings, open questions, the exact next step, and the uncommitted code) into a card under docs/backlog/, so it can be picked up later from the same place by any session. Also resumes a parked task — finds the card, checks what went stale since, restores the code, and continues. Use when the user decides a task costs more than it is worth right now — "park this", "shelve it", "put this in the backlog", "let's stop here and come back later", "отложи задачу" — or wants one back — "resume <task>", "pick up <task> from the backlog", "what's in the backlog".
 argument-hint: "[why it's parked] | resume [slug]"
 ---
 
