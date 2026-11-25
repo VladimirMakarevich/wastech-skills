@@ -1,0 +1,52 @@
+{
+  "lang": "{{TODO: ru or en}}",
+  "task": {
+    "title": "{{TODO: TASK_TITLE}}",
+    "lede": "{{TODO: ONE_OR_TWO_SENTENCES: what changes, for whom}}",
+    "path": "{{TODO: SPEC_FOLDER}}/visual.html",
+    "meta": [["{{TODO: Status}}", "{{TODO: STATUS}}"], ["{{TODO: Sources}}", "{{TODO: SOURCES}}"], ["{{TODO: Updated}}", "{{TODO: DATE}}"]]
+  },
+  "sections": [
+    {
+      "type": "beforeAfter", "id": "change", "nav": "{{TODO: SHORT_NAV}}",
+      "eyebrow": "{{TODO: Checkpoint user · after happy-path.md}}",
+      "title": "{{TODO: What changes for the user}}",
+      "before": { "steps": [ { "title": "{{TODO: STEP}}", "text": "{{TODO: DETAIL}}" } ], "outcome": "{{TODO: WHAT_THEY_GET_TODAY}}" },
+      "after": { "steps": [ { "title": "{{TODO: STEP}}", "text": "{{TODO: DETAIL}}", "status": "new" } ], "outcome": "{{TODO: WHAT_THEY_GET_AFTER}}" }
+    },
+    {
+      "type": "journey", "id": "journey", "nav": "{{TODO: SHORT_NAV}}",
+      "title": "{{TODO: The user's path and the screen}}",
+      "frame": "browser",
+      "steps": [ { "title": "{{TODO: STEP}}", "text": "{{TODO: WHAT_THEY_SEE}}", "screen": "main", "ref": "{{TODO: FR-ID}}" } ]
+    },
+    {
+      "type": "architecture", "id": "arch", "nav": "{{TODO: SHORT_NAV}}",
+      "eyebrow": "{{TODO: Checkpoint technical · after design.md}}",
+      "title": "{{TODO: What the task touches}}",
+      "zones": [
+        {
+          "title": "{{TODO: ZONE}}", "path": "{{TODO: PATH}}", "link": "{{TODO: CALL_TO_NEXT_ZONE}}",
+          "cards": [
+            { "id": "{{TODO: card-id}}", "name": "{{TODO: ModuleName}}", "icon": "box", "status": "new", "desc": "{{TODO: ONE_SENTENCE}}", "tags": ["{{TODO: TECH}}"],
+              "changes": ["{{TODO: WHAT_THE_TASK_DOES_TO_IT}}"], "files": ["{{TODO: path/to/file.ext:line}}"], "reqs": ["{{TODO: FR-ID}}"] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "plan", "id": "plan", "nav": "{{TODO: SHORT_NAV}}",
+      "eyebrow": "{{TODO: Checkpoint plan · after plan/}}",
+      "title": "{{TODO: Plan}}",
+      "phases": [ { "n": "01", "title": "{{TODO: PHASE}}", "text": "{{TODO: DELIVERS}}", "cards": ["{{TODO: card-id}}"] } ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "main", "label": "{{TODO: STATE}}", "url": "{{TODO: app.example/path}}", "title": "{{TODO: SCREEN_TITLE}}",
+      "columns": [
+        [ { "type": "box", "id": "{{TODO: block-id}}", "mark": "new", "blocks": [ { "type": "field", "id": "{{TODO: field-id}}", "label": "{{TODO: LABEL}}", "placeholder": "{{TODO: PLACEHOLDER}}", "action": "{{TODO: ACTION}}" } ] } ]
+      ]
+    }
+  ]
+}

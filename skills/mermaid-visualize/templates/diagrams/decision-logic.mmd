@@ -1,0 +1,19 @@
+%% Decision logic: one business rule as a decision tree. One question per diamond; every branch ends in an outcome.
+%% Order the checks as the code (or the spec) orders them; cite the rule's source in the details table.
+flowchart TD
+    input[/"Promo code + cart"/]:::existing --> exists{"Code exists?"}:::new
+    exists -->|"no"| unknown["Reject: unknown code"]:::new
+    exists -->|"yes"| expired{"Expired?"}:::new
+    expired -->|"yes"| late["Reject: expired"]:::new
+    expired -->|"no"| minimum{"Cart total ≥ minimum?"}:::new
+    minimum -->|"no"| low["Reject: below minimum"]:::new
+    minimum -->|"yes"| apply["Apply percent_off to the total"]:::new
+
+    %% --- status kit (references/style.md): keep as is ---
+    classDef new fill:#E3F4E8,stroke:#2F855A,stroke-width:2.5px,color:#1C4532
+    classDef changed fill:#FFF3D6,stroke:#B7791F,stroke-width:2px,stroke-dasharray:6 3,color:#5F370E
+    classDef removed fill:#FDE8E8,stroke:#C53030,stroke-width:2px,stroke-dasharray:2 3,color:#742A2A
+    classDef existing fill:#F4F6F8,stroke:#9AA5B1,stroke-width:1px,color:#323F4B
+    classDef external fill:#FFFFFF,stroke:#7B8794,stroke-width:1.5px,stroke-dasharray:4 4,color:#323F4B
+    classDef person fill:#E6EEFF,stroke:#3B5BDB,stroke-width:1.5px,color:#1E2A78
+    classDef focus fill:#F3EBFF,stroke:#6B46C1,stroke-width:3px,color:#322659

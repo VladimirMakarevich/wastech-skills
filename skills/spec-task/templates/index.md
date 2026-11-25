@@ -25,7 +25,8 @@
 | 8 | [questions.md](questions.md) | Open questions (living) | ☐ |
 | — | [plan/index.md](plan/index.md) | Phased implementation plan | ☐ |
 
-<!-- Mark a document ☑ only after the user has reviewed and signed off on it. -->
+<!-- Mark a document ☑ only after the user has reviewed and signed off on it.
+     A visual (visual.md) is optional: the visualize or mermaid-visualize skill adds its row here when it creates one. -->
 
 ## How this task is being worked
 

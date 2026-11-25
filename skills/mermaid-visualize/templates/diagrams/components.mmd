@@ -1,0 +1,38 @@
+%% Components: the change as a vertical slice across the project's REAL layers.
+%% One subgraph per layer, named as the codebase names it; nodes are modules, classes, or files.
+%% Left to right, entry layer first: arrows enter each layer from the side, not through its title.
+flowchart LR
+    subgraph ui["UI layer"]
+        direction TB
+        page["CheckoutPage"]:::changed
+        field["PromoCodeField"]:::new
+    end
+
+    subgraph app["Application layer"]
+        direction TB
+        service("OrderService.applyPromo"):::new
+        rules("DiscountRules"):::new
+    end
+
+    subgraph data["Data layer"]
+        direction TB
+        repo("OrderRepository"):::changed
+        migration[/"Migration: add discount columns"/]:::new
+        table[("orders table")]:::existing
+    end
+
+    page --> field
+    field ==>|"apply(code)"| service
+    service ==> rules
+    service ==> repo
+    repo --> table
+    migration -.-> table
+
+    %% --- status kit (references/style.md): keep as is ---
+    classDef new fill:#E3F4E8,stroke:#2F855A,stroke-width:2.5px,color:#1C4532
+    classDef changed fill:#FFF3D6,stroke:#B7791F,stroke-width:2px,stroke-dasharray:6 3,color:#5F370E
+    classDef removed fill:#FDE8E8,stroke:#C53030,stroke-width:2px,stroke-dasharray:2 3,color:#742A2A
+    classDef existing fill:#F4F6F8,stroke:#9AA5B1,stroke-width:1px,color:#323F4B
+    classDef external fill:#FFFFFF,stroke:#7B8794,stroke-width:1.5px,stroke-dasharray:4 4,color:#323F4B
+    classDef person fill:#E6EEFF,stroke:#3B5BDB,stroke-width:1.5px,color:#1E2A78
+    classDef focus fill:#F3EBFF,stroke:#6B46C1,stroke-width:3px,color:#322659

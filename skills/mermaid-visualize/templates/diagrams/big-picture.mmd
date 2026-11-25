@@ -1,0 +1,36 @@
+%% L0 big picture: the whole task or system on one screen. At most 12 nodes.
+%% Zones as subgraphs (the project's real parts), people on the left, external systems on the right.
+%% Status classes show what this task adds (new), changes (changed), or leaves alone (existing).
+flowchart LR
+    customer(["Customer"]):::person
+
+    subgraph web["Web app"]
+        direction TB
+        checkout["Checkout page"]:::changed
+        promo["Promo code field"]:::new
+    end
+
+    subgraph backend["Backend"]
+        direction TB
+        api("Orders API"):::changed
+        rules("Discount rules"):::new
+        db[("Orders DB")]:::existing
+    end
+
+    payments[["Payment provider"]]:::external
+
+    customer --> checkout
+    checkout --> promo
+    promo ==>|"apply code"| api
+    api ==> rules
+    api --> db
+    api -.->|"charge"| payments
+
+    %% --- status kit (references/style.md): keep as is ---
+    classDef new fill:#E3F4E8,stroke:#2F855A,stroke-width:2.5px,color:#1C4532
+    classDef changed fill:#FFF3D6,stroke:#B7791F,stroke-width:2px,stroke-dasharray:6 3,color:#5F370E
+    classDef removed fill:#FDE8E8,stroke:#C53030,stroke-width:2px,stroke-dasharray:2 3,color:#742A2A
+    classDef existing fill:#F4F6F8,stroke:#9AA5B1,stroke-width:1px,color:#323F4B
+    classDef external fill:#FFFFFF,stroke:#7B8794,stroke-width:1.5px,stroke-dasharray:4 4,color:#323F4B
+    classDef person fill:#E6EEFF,stroke:#3B5BDB,stroke-width:1.5px,color:#1E2A78
+    classDef focus fill:#F3EBFF,stroke:#6B46C1,stroke-width:3px,color:#322659

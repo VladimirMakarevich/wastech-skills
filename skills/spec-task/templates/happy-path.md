@@ -33,6 +33,9 @@
 
 ## User flow
 
+<!-- This diagram is the source. If the task has a visual (visual.md), the visual is derived from it:
+     change the diagram here, then have the visual skill update its copy. -->
+
 ```mermaid
 flowchart TD
     A[User starts <action>] --> B{<decision>}

@@ -1,6 +1,6 @@
 ---
 name: spec-task
-description: Turn a rough idea or task into a structured, reviewed spec folder (default docs/tasks/<slug>/) — worked through WITH the user one document at a time, from the raw problem down to a phased implementation plan. Scaffolds problem / requirements / out-of-scope / happy-path / design / acceptance-criteria / definition-of-done / open-questions docs and a plan/ folder split into numbered phases, all cross-linked from index.md. Learns the repository first (its rules, stack, commands, and existing spec conventions) so the design and plan fit the project instead of a generic template. Interactive and sequential — drafts each file, refines it with the user, gets sign-off, then moves to the next — foundational docs first, the implementation plan last. Use when the user says "spec out X", "shape this task", "let's plan feature Y properly", "write a spec for", or hands you an idea that needs discovery before coding. Produces docs, not code.
+description: Turn a rough idea or task into a structured, reviewed spec folder (default docs/tasks/<slug>/) — worked through WITH the user one document at a time, from the raw problem down to a phased implementation plan. Scaffolds problem / requirements / out-of-scope / happy-path / design / acceptance-criteria / definition-of-done / open-questions docs and a plan/ folder split into numbered phases, all cross-linked from index.md. At checkpoints, offers to visualize the task (before/after, the journey with screens, modules, decisions, plan) as an interactive page with the visualize skill. Learns the repository first (its rules, stack, commands, and existing spec conventions) so the design and plan fit the project instead of a generic template. Interactive and sequential — drafts each file, refines it with the user, gets sign-off, then moves to the next — foundational docs first, the implementation plan last. Use when the user says "spec out X", "shape this task", "let's plan feature Y properly", "write a spec for", or hands you an idea that needs discovery before coding. Produces docs, not code.
 ---
 
 # spec-task
@@ -61,14 +61,35 @@ throughout, not once.
 1. **`problem.md`** — capture the original problem faithfully, in the user's framing. No solutioning yet. This anchors every "why" downstream.
 2. **`requirements.md`** — derive verifiable FR-/NFR- from the problem. Behavior and outcomes, not implementation. Keep only the NFRs that apply. Flag persistence, contract, and compatibility touchpoints.
 3. **`out-of-scope.md`** — fence the scope: what's explicitly excluded, deferred, or a non-goal. Fight creep here.
-4. **`happy-path.md`** — make it concrete for a non-technical reader: Before/After, plain-language examples, and small Mermaid diagrams. If you can't tell the story simply, the requirements aren't ready — loop back. For a change with no end user (a library, an internal service), the "user" is the caller — tell the story from their side.
-5. **`design.md`** — the technical HOW as a vertical slice across the project's real layers, honoring its hard rules (below). Name the actual modules and files. Record the heavy decision(s) — context, options, why — inline. Delete template sections that don't apply to this project rather than leaving them empty.
+4. **`happy-path.md`** — make it concrete for a non-technical reader: Before/After, plain-language examples, and small Mermaid diagrams. If you can't tell the story simply, the requirements aren't ready — loop back. For a change with no end user (a library, an internal service), the "user" is the caller — tell the story from their side. After sign-off: **visual checkpoint `user`** (below).
+5. **`design.md`** — the technical HOW as a vertical slice across the project's real layers, honoring its hard rules (below). Name the actual modules and files. Record the heavy decision(s) — context, options, why — inline. Delete template sections that don't apply to this project rather than leaving them empty. After sign-off: **visual checkpoint `technical`**.
 6. **`acceptance-criteria.md`** — testable Given/When/Then per requirement, plus edge/error cases and NFR checks, with a verification method each.
 7. **`definition-of-done.md`** — the project's baseline DoD (from Step 0, with the real commands) + task-specific gates.
 8. **`questions.md`** — keep current the whole time; before signing off the plan, every **blocking** question must be Resolved.
-9. **`plan/`** — **last.** Break the work into ordered phases (`plan/index.md` + one `NN-<name>.md` each), sequenced by dependency (schema before the code that reads it, contract before its consumers, shared pieces before the features on top). Each phase is small and leaves the project building and green. This is the handoff to implementation.
+9. **`plan/`** — **last.** Break the work into ordered phases (`plan/index.md` + one `NN-<name>.md` each), sequenced by dependency (schema before the code that reads it, contract before its consumers, shared pieces before the features on top). Each phase is small and leaves the project building and green. This is the handoff to implementation. After sign-off: **visual checkpoint `plan`**.
 
 Keep `index.md` in sync as you go: flip document status, keep the links right, write the Summary once the docs settle, and append to the change log.
+
+## Visual checkpoints (with `visualize`)
+
+The spec is text; a picture lets the user see the whole task at once and check it before it is
+built. The **`visualize`** skill builds it in the spec folder: an interactive `visual.html` (module
+cards with their files and requirements, a user journey driving a screen mockup, decisions, rules,
+data, call sequence, plan), PNG snapshots, and a `visual.md` for GitHub. Offer it at three
+checkpoints, right after the document is signed off:
+
+| After | Preset | What the user gets to see |
+| --- | --- | --- |
+| `happy-path.md` | `user` | Before/after for the user, the journey step by step with the screens it passes through, what is out of scope |
+| `design.md` | `technical` | The modules touched, layer by layer, with what changes in each; the key decisions with their alternatives; rules, data model, call sequence, and states where they apply |
+| `plan/` | `plan` | The phases in order, what each delivers, and which modules each touches; risks and blocking questions |
+
+- **Offer it in one line**, e.g. "Want a visual of this? (before/after, the journey with screens)". The user may decline. Skip the offer for a small task where a picture adds nothing. The user can also ask for a visual, or a single section, at any point.
+- **Hand over, don't redo.** Invoke `visualize` with the spec folder and the preset. It owns `visual.json`, the build, the snapshots, and the `visual.md` row in `index.md`. All three checkpoints extend the same `visual.json`.
+- **A visual is derived from the docs, never a source.** When building it exposes a gap (an error with no screen, a module nobody owns), it goes into `questions.md` and back into the document, not into the picture.
+- **Keep it in sync.** If a signed-off document changes after its visual was built, have `visualize` update and rebuild it.
+- **Only `mermaid-visualize` installed?** Use it the same way at the same checkpoints: it writes `visual.md` with Mermaid diagrams rendered to SVG and PNG. Use one of the two per spec folder, not both: both write `visual.md`.
+- **Neither installed?** Keep the Mermaid diagrams inline in `happy-path.md` and `design.md` as the templates have them, and mention once that `visualize` would show the whole task as an interactive page.
 
 ## Respect the project's hard rules
 
@@ -95,6 +116,7 @@ boundaries (KISS > YAGNI > DRY).
 - No **blocking** open questions remain.
 - `plan/index.md` lists ordered phases with dependencies, each honoring the project's hard rules, ready to implement.
 - `index.md` Summary + document table are accurate; `status` reflects reality (`ready-to-implement` when the plan is signed off).
+- If a `visual.md` exists, it matches the final documents: rebuilt after the last change, nothing stale.
 
 ## What not to do
 
@@ -105,3 +127,4 @@ boundaries (KISS > YAGNI > DRY).
 - Don't plan anything that violates a hard rule to make the task easier — raise the conflict.
 - Don't write code or run builds/migrations here — this skill produces the spec.
 - Don't leave placeholder tokens (`{{…}}`) or empty template sections in a document you've marked done.
+- Don't let a visual decide anything or drift from the docs — the documents are the source, the visual follows them.

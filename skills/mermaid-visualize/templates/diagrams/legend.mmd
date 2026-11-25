@@ -1,0 +1,29 @@
+%% Legend: copy into every diagrams folder as legend.mmd. Delete the entries the visual never uses.
+flowchart TB
+    subgraph status["Status"]
+        direction LR
+        sNew["New"]:::new ~~~ sChanged["Changed"]:::changed ~~~ sRemoved["Removed"]:::removed ~~~ sExisting["Existing"]:::existing ~~~ sFocus["Zoomed in below"]:::focus
+    end
+
+    subgraph shapes["Shapes"]
+        direction LR
+        hPerson(["Person"]):::person ~~~ hScreen["Screen / UI"] ~~~ hLogic("Logic / service") ~~~ hData[("Data store")] ~~~ hExternal[["External system"]]:::external ~~~ hDecision{"Decision"}
+    end
+
+    subgraph arrows["Arrows"]
+        direction LR
+        a1(("A")) -->|"call, main path"| a2(("B"))
+        b1(("A")) -.->|"async, event, optional"| b2(("B"))
+        c1(("A")) ==>|"added or changed by this task"| c2(("B"))
+    end
+
+    status ~~~ shapes ~~~ arrows
+
+    %% --- status kit (references/style.md): keep as is ---
+    classDef new fill:#E3F4E8,stroke:#2F855A,stroke-width:2.5px,color:#1C4532
+    classDef changed fill:#FFF3D6,stroke:#B7791F,stroke-width:2px,stroke-dasharray:6 3,color:#5F370E
+    classDef removed fill:#FDE8E8,stroke:#C53030,stroke-width:2px,stroke-dasharray:2 3,color:#742A2A
+    classDef existing fill:#F4F6F8,stroke:#9AA5B1,stroke-width:1px,color:#323F4B
+    classDef external fill:#FFFFFF,stroke:#7B8794,stroke-width:1.5px,stroke-dasharray:4 4,color:#323F4B
+    classDef person fill:#E6EEFF,stroke:#3B5BDB,stroke-width:1.5px,color:#1E2A78
+    classDef focus fill:#F3EBFF,stroke:#6B46C1,stroke-width:3px,color:#322659
