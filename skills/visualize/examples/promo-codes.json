@@ -1,0 +1,257 @@
+{
+  "lang": "en",
+  "task": {
+    "title": "Promo codes at checkout",
+    "lede": "The customer enters a promo code at checkout and sees the discount in the total right away. If the code doesn't work, the reason shows under the field.",
+    "path": "docs/tasks/042-promo-codes/visual.html",
+    "meta": [["Status", "ready-to-implement"], ["Sources", "problem · requirements · happy-path · design · plan/"], ["Updated", "2026-11-25"]]
+  },
+  "sections": [
+    {
+      "type": "beforeAfter", "id": "change", "nav": "What changes",
+      "eyebrow": "Checkpoint user · after happy-path.md",
+      "title": "What changes for the customer",
+      "before": {
+        "steps": [
+          { "title": "Cart", "text": "3 items" },
+          { "title": "Checkout", "text": "address and delivery" },
+          { "title": "Payment", "text": "full price" }
+        ],
+        "outcome": "Pays **$49.90**. A discount is only possible through support."
+      },
+      "after": {
+        "steps": [
+          { "title": "Cart", "text": "3 items" },
+          { "title": "Checkout", "text": "now has a promo code field", "status": "changed" },
+          { "title": "Enters AUTUMN10", "text": "and presses Apply", "status": "new" },
+          { "title": "Sees the discount", "text": "−$4.99 in the summary", "status": "new" },
+          { "title": "Payment", "text": "discounted total", "status": "changed" }
+        ],
+        "outcome": "Pays **$44.91** and sees the saving at once."
+      }
+    },
+    {
+      "type": "architecture", "id": "arch", "nav": "Architecture",
+      "eyebrow": "Checkpoint technical · after design.md",
+      "title": "Architecture: what the task touches",
+      "intro": "Zones from top to bottom in call order. A card's color shows what the task does to it.",
+      "zones": [
+        {
+          "title": "Client", "path": "apps/web", "color": "#5B5BD6", "link": "POST /orders/:id/promo",
+          "cards": [
+            { "id": "checkout", "name": "CheckoutPage", "icon": "monitor", "status": "changed", "desc": "The checkout page. The summary gets a Discount line.", "tags": ["React", "SSR"],
+              "changes": ["Embeds PromoCodeField above the summary", "Shows the Discount line and the new total"], "files": ["apps/web/src/features/checkout/CheckoutPage.tsx:112"], "reqs": ["FR-3"] },
+            { "id": "field", "name": "PromoCodeField", "icon": "tag", "status": "new", "desc": "Input, Apply button, error under the field, chip for the applied code.", "tags": ["React", "a11y"],
+              "changes": ["Five states: empty, typing, checking, applied, rejected", "The error is tied to the input with `aria-describedby`"], "files": ["apps/web/src/features/checkout/PromoCodeField.tsx"], "reqs": ["FR-1", "FR-4"] },
+            { "id": "hook", "name": "usePromoCode", "icon": "code", "status": "new", "desc": "The API call, the field's states, a retry on network failure.", "tags": ["React Query"],
+              "changes": ["Mutation `POST /orders/:id/promo`", "Updates the cached order on success"], "files": ["apps/web/src/features/checkout/usePromoCode.ts"], "reqs": ["FR-2"] }
+          ]
+        },
+        {
+          "title": "API", "path": "apps/api", "color": "#D97706", "link": "Prisma",
+          "cards": [
+            { "id": "ctrl", "name": "OrdersController", "icon": "route", "status": "changed", "desc": "New route `POST /orders/:id/promo`. A rejection comes back as 422 with the reason.", "tags": ["NestJS", "REST"],
+              "changes": ["Route and DTO `{ code }`", "Maps PromoRejected → 422 `{ reason }`"], "files": ["apps/api/src/orders/orders.controller.ts:48", "apps/api/src/orders/dto/apply-promo.dto.ts"], "reqs": ["FR-2", "FR-4"] },
+            { "id": "svc", "name": "OrdersService.applyPromo", "icon": "server", "status": "new", "desc": "The flow: find the code, check it, recompute the total, save.", "tags": ["NestJS"],
+              "changes": ["Check and write in one transaction", "Increments `used_count`"], "files": ["apps/api/src/orders/orders.service.ts"], "reqs": ["FR-2", "FR-5"] },
+            { "id": "rules", "name": "PromoRules", "icon": "shield", "status": "new", "focus": true, "desc": "Pure validation functions: exists, expiry, usage limit, minimum total.", "tags": ["TypeScript", "Unit"],
+              "changes": ["The check order is set in design.md", "No database access, so easy to test"], "files": ["apps/api/src/promo/promo-rules.ts", "apps/api/src/promo/promo-rules.spec.ts"], "reqs": ["FR-2"], "note": "Opened up in “Validation rules”." },
+            { "id": "repo", "name": "OrdersRepository", "icon": "layers", "status": "changed", "desc": "Saves `discount_cents` and `promo_code` on the order.", "tags": ["Prisma"],
+              "changes": ["Method `setPromo(orderId, code, discount)`"], "files": ["apps/api/src/orders/orders.repository.ts:31"], "reqs": ["FR-5"] }
+          ]
+        },
+        {
+          "title": "Data and external systems", "path": "prisma · provider", "color": "#16A34A",
+          "cards": [
+            { "id": "db", "name": "PostgreSQL", "icon": "database", "status": "changed", "desc": "A new `promo_codes` table and two columns on `orders`.", "tags": ["Prisma", "Postgres 16"],
+              "changes": ["Table `promo_codes`", "`orders.discount_cents`, `orders.promo_code`"], "files": ["prisma/schema.prisma"], "reqs": ["FR-5"] },
+            { "id": "mig", "name": "promo_codes migration", "icon": "branch", "status": "new", "desc": "Creates the table and columns; existing orders get a zero discount.", "tags": ["Prisma Migrate"],
+              "changes": ["Reversible migration", "Default value for existing orders"], "files": ["prisma/migrations/20261125_promo_codes/migration.sql"], "reqs": ["NFR-2"] },
+            { "id": "psp", "name": "Payment provider", "icon": "card", "status": "existing", "desc": "Unchanged: receives the already-discounted total.", "tags": ["External"],
+              "changes": ["No changes"], "files": ["apps/api/src/payments/payments.client.ts"] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "journey", "id": "journey", "nav": "Journey",
+      "eyebrow": "Checkpoint user · after happy-path.md",
+      "title": "The customer's journey and the screen",
+      "intro": "The steps on the left switch the mockup on the right. NEW and CHANGED marks show what appears on the screen.",
+      "frame": "browser",
+      "steps": [
+        { "title": "Opens checkout", "text": "Sees the summary and an empty promo code field.", "screen": "empty", "ref": "FR-1" },
+        { "title": "Types AUTUMN10", "text": "The Apply button becomes active.", "screen": "typing", "ref": "FR-1" },
+        { "title": "Presses Apply", "text": "The button locks while the code is checked (under 300 ms).", "screen": "checking", "ref": "NFR-1" },
+        { "title": "Code accepted", "text": "A chip with the code, a −$4.99 Discount line, the new total.", "screen": "applied", "ref": "FR-3 · AC-2" },
+        { "title": "Code rejected", "text": "The field turns red; the reason shows under it.", "screen": "rejected-expired", "ref": "FR-4 · AC-3…5", "branch": "error branch" },
+        { "title": "Pays", "text": "$44.91 goes to payment.", "screen": "pay", "ref": "FR-5" }
+      ]
+    },
+    {
+      "type": "decision", "id": "decision", "nav": "Decision",
+      "eyebrow": "Key decision · design.md",
+      "title": "Where to validate the promo code",
+      "options": [
+        { "title": "PromoRules in the API", "text": "Pure functions in the service layer, called from OrdersService.", "chosen": true,
+          "pros": ["The logic lives in one place", "Easy to cover with unit tests", "Follows the project's layering rule"], "cons": ["Two database queries per apply", "Code caching is ours to build"] },
+        { "title": "In the database", "text": "A SQL function or constraints in PostgreSQL.",
+          "pros": ["Atomic by definition", "Code can't bypass it"], "cons": ["Business logic moves into SQL", "Hard to test and change", "Breaks the layering rule"] },
+        { "title": "External promo service", "text": "A hosted campaign and coupon service.",
+          "pros": ["Campaigns and analytics out of the box", "Marketing runs it themselves"], "cons": ["A new paid dependency", "One more network call at payment", "Outside this task's scope"] }
+      ],
+      "why": "Promo rules are business logic, and `.rules/architecture.md` puts business logic in the service layer. Two queries fit within NFR-1 (300 ms)."
+    },
+    {
+      "type": "rules", "id": "rules", "nav": "Rules",
+      "eyebrow": "Opens up PromoRules",
+      "title": "Validation rules",
+      "intro": "The checks run top to bottom; the first one that fails gives the error text. “On screen” shows how the customer sees it.",
+      "checks": [
+        { "title": "Code exists?", "code": "promo_codes.code = :code", "fail": "Promo code not found", "screen": "rejected-notfound" },
+        { "title": "Not expired?", "code": "expires_at > now()", "fail": "This code expired on Oct 31", "screen": "rejected-expired" },
+        { "title": "Usage limit not reached?", "code": "used_count < max_uses", "fail": "This code has been used up", "screen": "rejected-limit" },
+        { "title": "Order total high enough?", "code": "total ≥ min_total", "fail": "This code applies to orders over $30", "screen": "rejected-min" }
+      ],
+      "success": { "title": "Discount applied", "code": "discount = total × percent_off / 100" }
+    },
+    {
+      "type": "states", "id": "states", "nav": "States",
+      "eyebrow": "Checkpoint technical",
+      "title": "States of the promo code field",
+      "start": "empty",
+      "states": [
+        { "id": "empty", "label": "Empty", "status": "new", "text": "The button is disabled." },
+        { "id": "typing", "label": "Typing", "status": "new" },
+        { "id": "checking", "label": "Checking", "status": "new", "text": "The button is locked, a spinner shows." },
+        { "id": "applied", "label": "Applied", "status": "new", "text": "A chip with the code and a Remove action." },
+        { "id": "rejected", "label": "Rejected", "status": "new", "text": "The reason under the field." },
+        { "id": "paid", "label": "Order paid", "status": "existing" }
+      ],
+      "transitions": [
+        { "from": "empty", "to": "typing", "trigger": "starts typing" },
+        { "from": "typing", "to": "checking", "trigger": "Apply" },
+        { "from": "checking", "to": "applied", "trigger": "200" },
+        { "from": "checking", "to": "rejected", "trigger": "422 with a reason" },
+        { "from": "checking", "to": "typing", "trigger": "network unavailable" },
+        { "from": "rejected", "to": "typing", "trigger": "edits the code" },
+        { "from": "applied", "to": "empty", "trigger": "Remove" },
+        { "from": "applied", "to": "paid", "trigger": "payment" }
+      ]
+    },
+    {
+      "type": "dataModel", "id": "data", "nav": "Data",
+      "eyebrow": "Checkpoint technical",
+      "title": "Data model",
+      "intro": "New fields and tables are highlighted. Amounts are stored in cents, as everywhere in the project's schema.",
+      "entities": [
+        { "name": "orders", "status": "changed", "fields": [
+          { "name": "id", "type": "uuid", "key": "PK" },
+          { "name": "total_cents", "type": "int" },
+          { "name": "discount_cents", "type": "int", "status": "new", "note": "default 0" },
+          { "name": "promo_code", "type": "text", "key": "FK", "status": "new" },
+          { "name": "status", "type": "text" } ] },
+        { "name": "promo_codes", "status": "new", "fields": [
+          { "name": "code", "type": "text", "key": "PK", "status": "new" },
+          { "name": "percent_off", "type": "int", "status": "new" },
+          { "name": "min_total_cents", "type": "int", "status": "new" },
+          { "name": "expires_at", "type": "timestamptz", "status": "new" },
+          { "name": "max_uses", "type": "int", "status": "new" },
+          { "name": "used_count", "type": "int", "status": "new" } ] },
+        { "name": "order_items", "status": "existing", "fields": [
+          { "name": "id", "type": "uuid", "key": "PK" },
+          { "name": "order_id", "type": "uuid", "key": "FK" },
+          { "name": "price_cents", "type": "int" },
+          { "name": "quantity", "type": "int" } ] }
+      ],
+      "relations": ["orders.promo_code → promo_codes.code (optional)", "order_items.order_id → orders.id"]
+    },
+    {
+      "type": "sequence", "id": "sequence", "nav": "Calls",
+      "eyebrow": "Checkpoint technical",
+      "title": "Calls when the customer presses Apply",
+      "intro": "New steps are tinted green.",
+      "participants": [
+        { "id": "B", "label": "Customer", "kind": "person" },
+        { "id": "W", "label": "CheckoutPage", "status": "changed" },
+        { "id": "C", "label": "OrdersController", "status": "changed" },
+        { "id": "S", "label": "OrdersService", "status": "new" },
+        { "id": "R", "label": "PromoRules", "status": "new" },
+        { "id": "DB", "label": "PostgreSQL" }
+      ],
+      "items": [
+        { "from": "B", "to": "W", "text": "Types a code, presses Apply" },
+        { "note": "New in this task", "over": ["W", "R"], "status": "new" },
+        { "from": "W", "to": "C", "text": "POST /orders/:id/promo", "status": "new" },
+        { "from": "C", "to": "S", "text": "applyPromo(orderId, code)", "status": "new" },
+        { "from": "S", "to": "DB", "text": "find the promo code", "status": "new" },
+        { "from": "DB", "to": "S", "text": "promo code or null", "reply": true, "status": "new" },
+        { "from": "S", "to": "R", "text": "validate(promo, order)", "status": "new" },
+        { "divider": "code accepted", "status": "new" },
+        { "from": "R", "to": "S", "text": "10% discount", "reply": true, "status": "new" },
+        { "from": "S", "to": "DB", "text": "save discount and promo_code", "status": "new" },
+        { "from": "S", "to": "C", "text": "order with the new total", "reply": true, "status": "new" },
+        { "from": "C", "to": "W", "text": "200 { total, discount }", "reply": true, "status": "new" },
+        { "from": "W", "to": "B", "text": "Total with the discount", "reply": true, "status": "new" },
+        { "divider": "code rejected", "status": "new" },
+        { "from": "R", "to": "S", "text": "rejection reason", "reply": true, "status": "new" },
+        { "from": "S", "to": "C", "text": "PromoRejected", "reply": true, "status": "new" },
+        { "from": "C", "to": "W", "text": "422 { reason }", "reply": true, "status": "new" },
+        { "from": "W", "to": "B", "text": "Error under the field", "reply": true, "status": "new" }
+      ]
+    },
+    {
+      "type": "plan", "id": "plan", "nav": "Plan",
+      "eyebrow": "Checkpoint plan · after plan/",
+      "title": "Plan by phase",
+      "intro": "Click a phase: the architecture keeps only the modules it touches highlighted.",
+      "phases": [
+        { "n": "01", "title": "Schema", "text": "promo_codes table and migration", "state": "done", "cards": ["db", "mig"] },
+        { "n": "02", "title": "Rules", "text": "PromoRules and unit tests", "state": "active", "progress": 60, "cards": ["rules"] },
+        { "n": "03", "title": "API", "text": "Route, service, repository", "cards": ["ctrl", "svc", "repo"] },
+        { "n": "04", "title": "UI", "text": "Field, errors, states", "cards": ["checkout", "field", "hook"] },
+        { "n": "05", "title": "E2E", "text": "Scenarios AC-1…AC-6", "cards": ["checkout", "field", "ctrl", "svc"] }
+      ]
+    },
+    {
+      "type": "notes", "id": "notes", "nav": "Risks",
+      "eyebrow": "questions.md · out-of-scope.md",
+      "title": "Risks, questions, and boundaries",
+      "items": [
+        { "title": "Race on the last use", "tone": "risk", "text": "Two orders apply a code with `used_count = max_uses − 1` at the same time. The check and the increment run in one transaction." },
+        { "title": "Promo codes and sale prices", "tone": "question", "tag": "not blocking", "text": "Does the discount stack with a sale? Not for now: the code applies to the full price." },
+        { "title": "Promo code admin", "tone": "out", "text": "Codes are added by migration or SQL; a marketing UI is a separate task." }
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "id": "empty", "label": "Empty", "url": "shop.example/checkout", "title": "Checkout", "aside": "Step 3 of 3",
+      "columns": [
+        [
+          { "type": "box", "id": "items", "blocks": [ { "type": "rows", "items": [["Trail X sneakers", "$29.90"], ["Socks, 3 pairs", "$7.90"], ["Comfort insoles", "$12.10"]] } ] },
+          { "type": "box", "id": "promo-box", "mark": "new", "blocks": [ { "type": "field", "id": "promo", "label": "Promo code", "placeholder": "e.g. AUTUMN10", "action": "Apply", "actionState": "disabled" } ] }
+        ],
+        [
+          { "type": "box", "id": "sum-box", "mark": "changed", "blocks": [ { "type": "summary", "id": "summary", "lines": [ { "label": "Items", "value": "$49.90" } ], "total": { "label": "Total", "value": "$49.90" } } ] },
+          { "type": "button", "id": "pay", "text": "Pay $49.90", "variant": "primary" }
+        ]
+      ]
+    },
+    { "id": "typing", "label": "Typing", "base": "empty", "patch": { "promo": { "value": "AUTUMN10", "actionState": "" } } },
+    { "id": "checking", "label": "Checking", "base": "typing", "patch": { "promo": { "actionState": "loading", "loadingText": "Checking" } } },
+    {
+      "id": "applied", "label": "Applied", "base": "empty",
+      "patch": {
+        "promo-box": { "blocks": [ { "type": "chip", "tone": "ok", "text": "AUTUMN10 · −10%", "action": "Remove" }, { "type": "text", "tone": "ok", "text": "✓ Discount applied" } ] },
+        "summary": { "lines": [ { "label": "Items", "value": "$49.90" }, { "label": "Discount AUTUMN10", "value": "−$4.99", "tone": "ok" } ], "total": { "label": "Total", "value": "$44.91" } },
+        "pay": { "text": "Pay $44.91" }
+      }
+    },
+    { "id": "rejected-expired", "label": "Expired", "base": "typing", "patch": { "promo": { "state": "error", "hint": "⚠ This code expired on Oct 31", "hintTone": "err" } } },
+    { "id": "rejected-notfound", "label": "Not found", "base": "typing", "patch": { "promo": { "value": "AUTUMM10", "state": "error", "hint": "⚠ Promo code not found", "hintTone": "err" } } },
+    { "id": "rejected-limit", "label": "Used up", "base": "typing", "patch": { "promo": { "state": "error", "hint": "⚠ This code has been used up", "hintTone": "err" } } },
+    { "id": "rejected-min", "label": "Total too low", "base": "typing", "patch": { "promo": { "state": "error", "hint": "⚠ This code applies to orders over $30", "hintTone": "err" } } },
+    { "id": "pay", "label": "Payment", "base": "applied", "patch": { "pay": { "state": "focus" } } }
+  ]
+}
