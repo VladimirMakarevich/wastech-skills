@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a task in wastime-app end to end.
+description: Implement a task in the project end to end.
 ---
 
 # implement
